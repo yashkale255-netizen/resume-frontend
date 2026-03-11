@@ -1,0 +1,39 @@
+import { jwtVerify } from "jose";
+import { NextRequest, NextResponse } from "next/server";
+export async function middleware(req: NextRequest) {
+  const authRoutes = ["/login", "/register", "/"];
+  const protectedRoute = [
+    "/dashboard",
+    "/dashboard/templates",
+    "/dashboard/resumesection",
+    "/",
+    "/dashboard/profile",
+  ];
+  const pathname = req?.nextUrl?.pathname;
+
+  const tokencookievalue = req?.cookies?.get("tokenCookie")?.value;
+  console.log("**** req middleware ****", tokencookievalue);
+  if (!tokencookievalue && protectedRoute.includes(pathname)) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+  try {
+    const secret = new TextEncoder().encode(process.env.JWTSECRET);
+
+    const { payload } = await jwtVerify(tokencookievalue!, secret);
+
+    console.log("payload : ", payload);
+
+    if (payload?.userId && authRoutes.includes(pathname)) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+    return NextResponse.next();
+  } catch (error) {
+    console.log("error", error);
+  }
+  return NextResponse.next();
+}
+
+export const config = {
+  //   matcher: ["/dashboard/:path*", "/"],
+  matcher: ["/login", "/", "/dashboard/:path*"], //runevery where just testin purpose
+};
