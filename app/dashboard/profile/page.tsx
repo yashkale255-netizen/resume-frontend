@@ -35,7 +35,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<TabId>("profile");
   const [select, setSelect] = useState<string | null>(null);
   const [selectimageurl, setSelectimageurl] = useState<string | null>(null);
-  const cookiename = "tokenCookie";
+  const cookiename = "_vercel_jwt";
   const { data } = useContext(userContext);
   console.log("data context :", data);
 

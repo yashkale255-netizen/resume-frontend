@@ -15,7 +15,7 @@ export async function middleware(req: NextRequest) {
   ];
   const pathname = req?.nextUrl?.pathname;
 
-  const tokencookievalue = req?.cookies?.get("tokenCookie")?.value;
+  const tokencookievalue = req?.cookies?.get("_vercel_jwt")?.value;
   console.log("**** req middleware ****", tokencookievalue);
   if (!tokencookievalue && protectedRoute.includes(pathname)) {
     return NextResponse.redirect(
