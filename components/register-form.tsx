@@ -57,6 +57,8 @@ export function RegisterForm({
       transition: { duration: 0.4, ease: "easeOut" },
     },
   };
+  console.log("public base url : "+process.env.NEXT_PUBLIC_BASE_URL);
+  
   const mysubmithandler: SubmitHandler<IFormInput> = async (data) => {
     // toast.success("register succesfully", { position: "top-right" });
     // console.log(data);
