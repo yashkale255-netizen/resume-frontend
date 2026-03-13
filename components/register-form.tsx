@@ -57,8 +57,8 @@ export function RegisterForm({
       transition: { duration: 0.4, ease: "easeOut" },
     },
   };
-  console.log("public base url : "+process.env.NEXT_PUBLIC_BASE_URL);
-  
+  console.log("public base url : " + process.env.NEXT_PUBLIC_BASE_URL);
+
   const mysubmithandler: SubmitHandler<IFormInput> = async (data) => {
     // toast.success("register succesfully", { position: "top-right" });
     // console.log(data);
@@ -69,14 +69,17 @@ export function RegisterForm({
       password: data.password,
     };
     try {
-      let res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/users/register`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(objdata),
-        headers: {
-          "Content-Type": "application/json",
+      let res = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/v1/users/register`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(objdata),
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      });
+      );
       let resmessage = await res.json();
       console.log(resmessage);
       if (resmessage.status === 500) {
@@ -199,7 +202,11 @@ export function RegisterForm({
 
         <motion.div variants={itemVariants} className="pt-2">
           {processing ? (
-            <Button variant="secondary" className="w-full shadow-lg shadow-primary/20 active:scale-[0.98] transition-all border py-2 rounded-[6px] border-gray-900/40 bg-gray-500/60 text-white hover:text-black" disabled>
+            <Button
+              variant="secondary"
+              className="w-full shadow-lg shadow-primary/20 active:scale-[0.98] transition-all border py-2 rounded-[6px] border-gray-900/40 bg-gray-500/60 text-white hover:text-black"
+              disabled
+            >
               Get Started
               <Spinner data-icon="inline-start" />
             </Button>
