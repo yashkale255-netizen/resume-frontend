@@ -23,21 +23,25 @@ const templateItems = [
     title: "ATS Friendly",
     desc: "Optimized for automated tracking systems to ensure your resume reaches human recruiters every time.",
     icon: <ShieldCheck className="size-5 text-primary" />,
+    link: '/dashboard/resume-analyzer'
   },
   {
     title: "Simple Resume",
     desc: "Clean, minimalist designs that focus on content clarity and readability for conservative industries.",
     icon: <FileText className="size-5 text-primary" />,
+    link: '/dashboard/templates'
   },
   {
     title: "Industrial Recognition",
     desc: "Built based on data from top hiring managers across tech, finance, and healthcare sectors.",
     icon: <Briefcase className="size-5 text-primary" />,
+    link: '/dashboard/templates'
   },
   {
     title: "Professional",
     desc: "Elegant layouts that highlight your career progression and leadership achievements effectively.",
     icon: <Star className="size-5 text-primary" />,
+    link: '/dashboard/templates'
   },
 ];
 
@@ -61,15 +65,33 @@ export function Navbar() {
   const navbarNotShown = ["/login", "/register"];
 
   useEffect(() => {
-    if (navbarNotShown.includes(pathname)) {
-      setIsNavShown(false);
-    }
+    setIsNavShown(!navbarNotShown.includes(pathname));
+
     async function getData() {
-      let res = await fetch("https://resumebuilder-saas-frontend.vercel.app/api/me");
-      let data = await res.json();
-      if (data) {
-        // console.log("data : ", data);
-        setLoggedinUser(data.user);
+      try {
+        let res = await fetch("http://localhost:3000/api/me", {
+          cache: "no-store",
+        });
+
+        if (!res.ok) {
+          console.warn("/api/me returned non-OK status", res.status);
+          setLoggedinUser(null);
+          return;
+        }
+
+        let data = await res.json();
+        console.log("navbar data  " + data);
+        console.log("navbar res  " + res);
+
+
+        if (data && data.user) {
+          setLoggedinUser(data.user);
+        } else {
+          setLoggedinUser(null);
+        }
+      } catch (err) {
+        console.error("Navbar getData fetch error:", err);
+        setLoggedinUser(null);
       }
     }
     getData();
@@ -147,7 +169,7 @@ export function Navbar() {
                     {templateItems.map((item, idx) => (
                       <Link
                         key={idx}
-                        href="/templates"
+                        href={`${item.link}`}
                         className="group p-3 rounded-lg hover:bg-muted transition-all"
                       >
                         <div className="flex items-center gap-3 mb-1">
@@ -319,45 +341,74 @@ export function Navbar() {
 
             {/* Modern SaaS Action Buttons */}
             <div className="flex flex-col gap-3 pt-8 mt-6 border-t border-border/50">
-              {/* Animated Login Button */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Link
-                  href="/login"
-                  className="flex w-full items-center justify-center rounded-xl border border-border bg-secondary/50 py-4 text-sm font-bold transition-all active:scale-[0.98] hover:bg-secondary"
-                >
-                  Sign In
-                </Link>
-              </motion.div>
-
-              {/* Animated Register Button with Shimmer and Glow */}
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <Link
-                  href="/register"
-                  className="relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-primary py-4 text-sm font-black text-primary-foreground shadow-[0_10px_20px_-10px_rgba(var(--primary),0.5)] active:scale-[0.98] transition-all"
-                >
-                  {/* Animated Shimmer Overlay */}
+              {loggedinuser ? (
+                <>
                   <motion.div
-                    animate={{ x: ["-100%", "100%"] }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 3,
-                      ease: "linear",
-                    }}
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
-                  />
-                  <span className="relative z-10 flex items-center gap-2">
-                    Get Started for Free <ArrowRight className="size-4" />
-                  </span>
-                </Link>
-              </motion.div>
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Link
+                      href="/dashboard/profile"
+                      className="flex w-full items-center justify-center rounded-xl border border-border bg-primary/10 py-4 text-sm font-bold transition-all active:scale-[0.98] hover:bg-primary/20"
+                    >
+                      Profile
+                    </Link>
+                  </motion.div>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Link
+                      href="/logout"
+                      className="flex w-full items-center justify-center rounded-xl border border-border bg-red-500/10 py-4 text-sm font-bold text-red-600 transition-all active:scale-[0.98] hover:bg-red-500/20"
+                    >
+                      Log out
+                    </Link>
+                  </motion.div>
+                </>
+              ) : (
+                <>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <Link
+                      href="/login"
+                      className="flex w-full items-center justify-center rounded-xl border border-border bg-secondary/50 py-4 text-sm font-bold transition-all active:scale-[0.98] hover:bg-secondary"
+                    >
+                      Sign In
+                    </Link>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                  >
+                    <Link
+                      href="/register"
+                      className="relative flex w-full items-center justify-center overflow-hidden rounded-xl bg-primary py-4 text-sm font-black text-primary-foreground shadow-[0_10px_20px_-10px_rgba(var(--primary),0.5)] active:scale-[0.98] transition-all"
+                    >
+                      {/* Animated Shimmer Overlay */}
+                      <motion.div
+                        animate={{ x: ["-100%", "100%"] }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 3,
+                          ease: "linear",
+                        }}
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12"
+                      />
+                      <span className="relative z-10 flex items-center gap-2">
+                        Get Started for Free <ArrowRight className="size-4" />
+                      </span>
+                    </Link>
+                  </motion.div>
+                </>
+              )}
             </div>
           </motion.div>
         )}

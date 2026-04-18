@@ -24,8 +24,8 @@ export default function LoginPage() {
     visible: {
       y: 0,
       opacity: 1,
-      transition: { 
-        duration: 0.5, 
+      transition: {
+        duration: 0.5,
         ease: "easeOut" // "as const" fixes the easing type error
       },
     },
@@ -33,9 +33,9 @@ export default function LoginPage() {
 
   return (
     <div className="grid min-h-svh w-full lg:grid-cols-2 bg-background overflow-x-hidden">
-      
+
       {/* Left Side: Form */}
-      <motion.div 
+      <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -51,7 +51,7 @@ export default function LoginPage() {
         </motion.div>
 
         <div className="flex flex-1 items-center justify-center">
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             className="w-full max-w-sm space-y-6"
           >
@@ -72,14 +72,14 @@ export default function LoginPage() {
       </motion.div>
 
       {/* Right Side: Visual/Branding */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, x: 40 }}
         animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, delay: 0.4, ease: "easeOut"  }}
+        transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         className="relative hidden bg-muted lg:block overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent z-10" />
-        
+
         <div className="absolute bottom-12 left-12 z-20 max-w-md text-white">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

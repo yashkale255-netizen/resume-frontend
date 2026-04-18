@@ -95,7 +95,8 @@ export function LoginForm({
         }, 1500);
       }
     } catch (error) {
-      toast.error("not reigster", {
+      setProcessing(false);
+      toast.error("Login failed. Please try again.", {
         position: "top-right",
       });
     }

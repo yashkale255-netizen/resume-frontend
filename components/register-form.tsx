@@ -82,6 +82,7 @@ export function RegisterForm({
       );
       let resmessage = await res.json();
       console.log(resmessage);
+      setProcessing(false);
       if (resmessage.status === 500) {
         if (resmessage?.error?.errorResponse?.code === 11000) {
           toast.error(
@@ -96,7 +97,7 @@ export function RegisterForm({
           });
         }
       } else if (resmessage.status === 200) {
-        toast.error(resmessage?.msg, {
+        toast.success(resmessage?.msg, {
           position: "top-right",
         });
         setTimeout(() => {

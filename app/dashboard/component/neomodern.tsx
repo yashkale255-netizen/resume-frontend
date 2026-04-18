@@ -14,11 +14,11 @@ type TraditionalTemplateProps = {
 };
 const NeoModernTemplate = ({
   data
-}: TraditionalTemplateProps): ReactElement =>  {
+}: TraditionalTemplateProps): ReactElement => {
   // This data mirrors your ResumeSchema structure
   const resumeData = {
     personal: {
-      name: "Alex Rivera",
+      name: "Yash jahav",
       email: "alex.rivera@devmail.com",
       phone: "+1 (555) 012-3456",
       location: "San Francisco, CA",
@@ -111,18 +111,21 @@ const NeoModernTemplate = ({
             {resumeData.personal.name.charAt(0)}
           </div>
           <h1 className="text-2xl font-black uppercase leading-none mb-2">
-            {resumeData.personal.name}
+            {/* {resumeData.personal.name} */}
+
+            {data?.personal?.name || resumeData.personal.name}
           </h1>
           <p className="text-blue-400 font-bold text-xs uppercase tracking-tighter mb-8">
-            {resumeData.personal.headline}
+            {/* {resumeData.personal.headline} */}
+            {data?.personal?.headline || resumeData.personal.headline}
           </p>
 
           <div className="space-y-4 text-[10px]">
             <div>
               <p className="text-slate-500 font-bold uppercase mb-1">Contact</p>
-              <p>{resumeData.personal.email}</p>
-              <p>{resumeData.personal.phone}</p>
-              <p>{resumeData.personal.location}</p>
+              <p> {data?.personal?.email || resumeData.personal.email}</p>
+              <p>{data?.personal?.phone || resumeData.personal.phone}</p>
+              <p>{data?.personal?.location || resumeData.personal.location}</p>
             </div>
             <div>
               <p className="text-slate-500 font-bold uppercase mb-1">Stack</p>
@@ -172,27 +175,45 @@ const NeoModernTemplate = ({
             Work
           </h2>
           <div className="space-y-6">
-            {resumeData.experience.map((exp, i) => (
-              <div
-                key={i}
-                className="relative pl-4 border-l-2 border-slate-100"
-              >
-                <div className="flex justify-between items-baseline">
-                  <h3 className="font-black text-slate-800 uppercase text-xs">
-                    {exp.role}
-                  </h3>
-                  <span className="text-[9px] font-bold bg-slate-100 px-2 py-0.5 rounded">
-                    {exp.startDate} - {exp.endDate}
-                  </span>
-                </div>
-                <p className="text-[10px] text-blue-600 font-black mb-2 uppercase">
-                  {exp.company}
-                </p>
-                <p className="text-[11px] text-slate-500 leading-tight">
-                  {exp.description}
-                </p>
+            {data?.experience ? (
+              <div className="space-y-6">
+                {data?.experience?.map((exp, i) => (
+                  <div key={i} className="text-[13px]">
+                    <div className="flex justify-between font-bold text-slate-900">
+                      <span className="text-sm">{exp?.role}</span>
+                      <span className="text-slate-500 font-medium">
+                        {exp?.startDate} - {exp?.endDate}
+                      </span>
+                    </div>
+                    <p className="text-blue-600 font-bold mb-2 uppercase text-[11px] tracking-wide">
+                      {exp?.company}
+                    </p>
+                    <p className="text-slate-600 leading-relaxed">
+                      {exp?.description}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              <div className="space-y-6">
+                {resumeData?.experience?.map((exp, i) => (
+                  <div key={i} className="text-[13px]">
+                    <div className="flex justify-between font-bold text-slate-900">
+                      <span className="text-sm">{exp?.role}</span>
+                      <span className="text-slate-500 font-medium">
+                        {exp?.startDate} - {exp?.endDate}
+                      </span>
+                    </div>
+                    <p className="text-blue-600 font-bold mb-2 uppercase text-[11px] tracking-wide">
+                      {exp?.company}
+                    </p>
+                    <p className="text-slate-600 leading-relaxed">
+                      {exp?.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
 
@@ -201,21 +222,27 @@ const NeoModernTemplate = ({
             Key Projects
           </h2>
           <div className="grid grid-cols-1 gap-3">
-            {resumeData.projects.map((project, i) => (
+            {data?.projects?.map((project, i) => (
               <div
                 key={i}
-                className="border-2 border-slate-900 p-3 hover:bg-yellow-50 transition-colors"
+                className="p-4 bg-slate-50 border border-slate-100 rounded-lg"
               >
-                <h3 className="font-black text-[11px] uppercase">
-                  {project.title}
-                </h3>
-                <p className="text-[10px] text-slate-500 mb-2 line-clamp-2">
-                  {project.description}
+                <div className="flex justify-between items-center mb-2">
+                  <h3 className="font-bold text-[13px] text-slate-900">
+                    {project?.title}
+                  </h3>
+                  <ExternalLink size={14} className="text-blue-600" />
+                </div>
+                <p className="text-[12px] text-slate-600 mb-3 leading-snug">
+                  {project?.description}
                 </p>
-                <div className="flex gap-2">
-                  {project.techStack.map((t, idx) => (
-                    <span key={idx} className="text-[9px] font-black underline">
-                      #{t}
+                <div className="flex flex-wrap gap-1.5">
+                  {project?.techStack.map((tech, idx) => (
+                    <span
+                      key={idx}
+                      className="text-[10px] bg-white border border-slate-200 px-2 py-0.5 rounded text-slate-500 font-medium uppercase tracking-tighter"
+                    >
+                      {tech}
                     </span>
                   ))}
                 </div>

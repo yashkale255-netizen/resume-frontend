@@ -12,7 +12,7 @@ export default function ContextProvider({
   const [userid, setUserid] = useState(null);
   useEffect(() => {
     async function getData() {
-      let res = await fetch("https://resumebuilder-saas-frontend.vercel.app/api/me");
+      let res = await fetch("http://localhost:3000/api/me");
       let data = await res.json();
       if (data) {
         setDataisfullfetched(true);

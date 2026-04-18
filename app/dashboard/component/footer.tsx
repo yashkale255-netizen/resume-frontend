@@ -12,14 +12,14 @@ export default function Footer() {
     <footer className="bg-white border-t border-slate-100 pt-24 pb-12">
       <div className="max-w-[1400px] mx-auto px-6 md:px-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
-          
+
           {/* Brand Column */}
           <div className="md:col-span-2 space-y-6">
             <div className="text-2xl font-black tracking-tighter italic">
               RESUMI<span className="text-blue-600">.</span>
             </div>
             <p className="text-slate-500 text-sm max-w-xs leading-relaxed font-light">
-              Architecting the future of professional narratives. 
+              Architecting the future of professional narratives.
               Built for high-growth individuals who value precision and design.
             </p>
             <div className="flex gap-4">
@@ -57,7 +57,7 @@ export default function Footer() {
               © {currentYear} ResuMi. All rights reserved.
             </p>
             <p className="text-[10px] font-black text-black uppercase tracking-[0.2em]">
-              Created by <span className="text-blue-600">Yash Jadhav</span> — 2026
+              Created by <span className="text-blue-600">Yash Kale</span> — 2026
             </p>
           </div>
 
@@ -66,7 +66,7 @@ export default function Footer() {
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
               <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">System Operational</span>
             </div>
-            <button 
+            <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
               className="text-[10px] font-bold uppercase tracking-widest hover:text-blue-600 transition-colors flex items-center gap-2 group"
             >
@@ -83,8 +83,8 @@ export default function Footer() {
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <li>
-      <Link 
-        href={href} 
+      <Link
+        href={href}
         className="text-xs font-bold text-slate-600 hover:text-black transition-colors uppercase tracking-widest"
       >
         {children}
@@ -95,8 +95,8 @@ function FooterLink({ href, children }: { href: string; children: React.ReactNod
 
 function SocialIcon({ icon, href }: { icon: React.ReactNode; href: string }) {
   return (
-    <Link 
-      href={href} 
+    <Link
+      href={href}
       className="w-10 h-10 border border-slate-100 flex items-center justify-center rounded-full hover:bg-black hover:text-white transition-all duration-300"
     >
       {icon}

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, ReactElement } from "react";
 import { useSearchParams } from "next/navigation";
+import { useReactToPrint } from "react-to-print";
 import {
   ChevronRight,
   ChevronLeft,
@@ -28,7 +29,7 @@ import { toast } from "sonner";
 import PromptionalTemplate from "../component/promotionalcertificate";
 import CreativeResumeTemplate from "../component/creativeTemplate";
 // --- ZOOM CONTAINER COMPONENT (Amazon Effect) ---
-const ZoomPreview = ({ children }: { children: React.ReactNode }) => {
+const ZoomPreview = ({ children, printRef }: { children: React.ReactNode, printRef?: React.RefObject<HTMLDivElement> }) => {
   const [transform, setTransform] = useState("translate(0%, 0%) scale(1)");
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -64,10 +65,13 @@ const ZoomPreview = ({ children }: { children: React.ReactNode }) => {
       {/* The Resume Container */}
       <div
         style={{ transform, transformOrigin: "center center" }}
-        className="w-full h-full flex items-start justify-center p-8 transition-transform duration-100 ease-out origin-center"
+        className="w-full h-full flex items-start justify-center p-8 transition-transform duration-100 ease-out origin-center print:transform-none print:p-0"
       >
         {/* We scale this wrapper to fit the template in the view usually, but zoom overrides it */}
-        <div className="bg-white shadow-2xl min-w-[210mm] min-h-[297mm] origin-top scale-[0.45] md:scale-[0.55] lg:scale-[0.65]">
+        <div
+          ref={printRef}
+          className="bg-white shadow-2xl min-w-[210mm] min-h-[297mm] origin-top scale-[0.45] md:scale-[0.55] lg:scale-[0.65] print:scale-100 print:shadow-none print:m-0"
+        >
           {children}
         </div>
       </div>
@@ -164,32 +168,42 @@ export default function page() {
   const searchParams = useSearchParams();
   const templateId = searchParams.get("template") || "modern";
   const [dataload, setdataisload] = useState(true);
+
+  const printRef = useRef<HTMLDivElement>(null);
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: "My_Resume",
+  });
   useEffect(() => {
     async function getresumedata() {
-      let res = await fetch(
-        `${process.env.NEXT_PUBLIC_RESUMEAPI_OPERATIONS}/get`,
-        {
-          credentials: "include",
-          headers: {
-            "Content-type": "application/json",
-          },
-        },
-      );
-      let resdata = await res.json();
-      if (resdata) {
-        setOriginalresumedata(resdata?.resumedata);
-        if (resdata?.resumedata) {
-          const safeData = {
-            ...INITIAL_DATA,
-            ...resdata.resumedata,
-            personal: {
-              ...INITIAL_DATA.personal,
-              ...(resdata.resumedata.personal || {}),
+      try {
+        let res = await fetch(
+          `${process.env.NEXT_PUBLIC_RESUMEAPI_OPERATIONS || "http://localhost:5500/api/v1/resume"}/get`,
+          {
+            credentials: "include",
+            headers: {
+              "Content-type": "application/json",
             },
-          };
+          },
+        );
+        let resdata = await res.json();
+        if (resdata) {
+          setOriginalresumedata(resdata?.resumedata);
+          if (resdata?.resumedata) {
+            const safeData = {
+              ...INITIAL_DATA,
+              ...resdata.resumedata,
+              personal: {
+                ...INITIAL_DATA.personal,
+                ...(resdata.resumedata.personal || {}),
+              },
+            };
 
-          setResumeData(safeData);
+            setResumeData(safeData);
+          }
         }
+      } catch (err) {
+        console.error("Failed to load resume data", err);
       }
       setdataisload(false);
     }
@@ -198,21 +212,25 @@ export default function page() {
   useEffect(() => {
     if (dataload) return;
     let timetosave = setTimeout(async () => {
-      let res = await fetch(
-        `${process.env.NEXT_PUBLIC_RESUMEAPI_OPERATIONS}/create`,
-        {
-          method: "post",
-          credentials: "include",
-          headers: {
-            "Content-type": "application/json",
+      try {
+        let res = await fetch(
+          `${process.env.NEXT_PUBLIC_RESUMEAPI_OPERATIONS || "http://localhost:5500/api/v1/resume"}/create`,
+          {
+            method: "post",
+            credentials: "include",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({ ...resumeData }),
           },
-          body: JSON.stringify({ ...resumeData }),
-        },
-      );
-      if (res.ok) {
-        toast.success("Auto Saved", {
-          position: "top-right",
-        });
+        );
+        if (res.ok) {
+          toast.success("Auto Saved", {
+            position: "top-right",
+          });
+        }
+      } catch (err) {
+        console.error("Failed to auto-save", err);
       }
     }, 1500);
     return () => {
@@ -689,23 +707,31 @@ export default function page() {
 
   const handleNext = async () => {
     if (currentStep === totalSteps - 1) {
-      let res = await fetch(
-        `${process.env.NEXT_PUBLIC_RESUMEAPI_OPERATIONS}/create`,
-        {
-          method: "post",
-          credentials: "include",
-          headers: {
-            "Content-type": "application/json",
+      handlePrint();
+      try {
+        let res = await fetch(
+          `${process.env.NEXT_PUBLIC_RESUMEAPI_OPERATIONS || "http://localhost:5500/api/v1/resume"}/create`,
+          {
+            method: "post",
+            credentials: "include",
+            headers: {
+              "Content-type": "application/json",
+            },
+            body: JSON.stringify({ ...resumeData }),
           },
-          body: JSON.stringify({ ...resumeData }),
-        },
-      );
-      let resdata = await res.json();
-      if (resdata?.status === 200) {
-        toast.success(resdata?.msg, { position: "top-right" });
-      }
-      if (resdata?.status === 500) {
-        toast.error(resdata?.msg, { position: "top-right" });
+        );
+        if (res.ok) {
+          let resdata = await res.json();
+          if (resdata?.status === 200) {
+            toast.success(resdata?.msg, { position: "top-right" });
+          }
+          if (resdata?.status === 500) {
+            toast.error(resdata?.msg, { position: "top-right" });
+          }
+        }
+      } catch (err) {
+        console.error("Failed to save resume", err);
+        toast.error("Failed to sync resume with server", { position: "top-right" });
       }
     }
     if (currentStep < totalSteps - 1) setCurrentStep((prev) => prev + 1);
@@ -757,11 +783,10 @@ export default function page() {
               onClick={handleBack}
               disabled={currentStep === 0}
               className={`flex items-center gap-2 px-6 py-3 rounded-lg text-sm font-medium transition-all
-                        ${
-                          currentStep === 0
-                            ? "text-zinc-300 cursor-not-allowed"
-                            : "text-zinc-600 hover:bg-zinc-100 text-black"
-                        }`}
+                        ${currentStep === 0
+                  ? "text-zinc-300 cursor-not-allowed"
+                  : "text-zinc-600 hover:bg-zinc-100 text-black"
+                }`}
             >
               <ChevronLeft size={16} /> Back
             </button>
@@ -770,7 +795,7 @@ export default function page() {
               onClick={handleNext}
               className="flex items-center gap-2 px-8 py-3 bg-black text-white rounded-lg text-sm font-bold hover:bg-zinc-800 hover:scale-105 transition-all shadow-lg shadow-zinc-200"
             >
-              {currentStep === totalSteps - 1 ? "Finish" : "Next Step"}
+              {currentStep === totalSteps - 1 ? "Finish & Download PDF" : "Next Step"}
               {currentStep !== totalSteps - 1 && <ChevronRight size={16} />}
             </button>
           </div>
@@ -785,7 +810,7 @@ export default function page() {
             </div>
           </div>
 
-          <ZoomPreview>
+          <ZoomPreview printRef={printRef}>
             {/* Pass the dynamic data to the selected component */}
             <TemplateComponent data={resumeData} />
           </ZoomPreview>
