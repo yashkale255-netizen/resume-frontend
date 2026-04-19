@@ -69,7 +69,7 @@ export function Navbar() {
 
     async function getData() {
       try {
-        let res = await fetch("http://localhost:3000/api/me", {
+        let res = await fetch("https://resume-frontend-qb7yjvfs5-yashkale255-netizens-projects.vercel.app/api/me", {
           cache: "no-store",
         });
 
