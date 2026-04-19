@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { jwtVerify } from "jose";
 
 export async function GET() {
-  const token = cookies().get("_vercel_jwt")?.value;
+  const token = cookies().get("tokenCookie")?.value;
 
   if (!token) {
     return Response.json({ user: null }, { status: 200 });
