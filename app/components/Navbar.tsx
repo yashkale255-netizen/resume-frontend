@@ -59,44 +59,65 @@ export function Navbar() {
   const [isHovered, setIsHovered] = useState(false);
   const [isNavShown, setIsNavShown] = useState(true);
   const [loggedinuser, setLoggedinUser] = useState<LoggedInUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const pathname = usePathname();
   console.log("pathname is : ", pathname);
 
   const navbarNotShown = ["/login", "/register"];
 
-  useEffect(() => {
-    setIsNavShown(!navbarNotShown.includes(pathname));
+  const fetchUserData = async () => {
+    try {
+      const baseUrl = typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_BASE_URL;
+      let res = await fetch(`${baseUrl}/api/me`, {
+        method: "GET",
+        cache: "no-store",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-    async function getData() {
-      try {
-        let res = await fetch("/api/me", {
-          cache: "no-store",
-          credentials: "include",
-        });
+      if (!res.ok) {
+        console.warn("/api/me returned non-OK status", res.status);
+        setLoggedinUser(null);
+        setIsLoading(false);
+        return;
+      }
 
-        if (!res.ok) {
-          console.warn("/api/me returned non-OK status", res.status);
-          setLoggedinUser(null);
-          return;
-        }
+      let data = await res.json();
+      console.log("navbar data:", data);
+      console.log("navbar user:", data?.user);
 
-        let data = await res.json();
-        console.log("navbar data  " + data);
-        console.log("navbar res  " + res);
-
-
-        if (data && data.user) {
-          setLoggedinUser(data.user);
-        } else {
-          setLoggedinUser(null);
-        }
-      } catch (err) {
-        console.error("Navbar getData fetch error:", err);
+      if (data && data.user) {
+        setLoggedinUser(data.user);
+      } else {
         setLoggedinUser(null);
       }
+      setIsLoading(false);
+    } catch (err) {
+      console.error("Navbar getData fetch error:", err);
+      setLoggedinUser(null);
+      setIsLoading(false);
     }
-    getData();
+  };
+
+  useEffect(() => {
+    setIsNavShown(!navbarNotShown.includes(pathname));
+    setIsLoading(true);
+    fetchUserData();
   }, [pathname]);
+
+  // Listen for storage changes to update navbar on login from another tab
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "userLoggedIn") {
+        fetchUserData();
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   console.log(loggedinuser);
 

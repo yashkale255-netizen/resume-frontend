@@ -90,6 +90,8 @@ export function LoginForm({
         toast.success(resmessage?.msg, {
           position: "top-right",
         });
+        // Trigger navbar refresh
+        localStorage.setItem("userLoggedIn", Date.now().toString());
         setTimeout(() => {
           router.push("/dashboard");
         }, 1500);
