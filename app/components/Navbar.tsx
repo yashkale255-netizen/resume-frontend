@@ -69,8 +69,9 @@ export function Navbar() {
 
     async function getData() {
       try {
-        let res = await fetch("https://resume-frontend-qb7yjvfs5-yashkale255-netizens-projects.vercel.app/api/me", {
+        let res = await fetch("/api/me", {
           cache: "no-store",
+          credentials: "include",
         });
 
         if (!res.ok) {
