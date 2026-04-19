@@ -67,6 +67,7 @@ export default function ProfilePage() {
       credentials: "include",
     });
 
+    Cookies.remove("tokenCookie", { path: "/" });
     localStorage.clear();
     sessionStorage.clear();
 

@@ -11,6 +11,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Spinner } from "./ui/spinner";
+import Cookies from "js-cookie";
 
 interface IFormInput {
   email: String;
@@ -90,6 +91,9 @@ export function LoginForm({
         toast.success(resmessage?.msg, {
           position: "top-right",
         });
+        if (resmessage?.data?.token) {
+          Cookies.set("tokenCookie", resmessage.data.token, { expires: 7, path: "/" });
+        }
         // Trigger navbar refresh
         localStorage.setItem("userLoggedIn", Date.now().toString());
         setTimeout(() => {
